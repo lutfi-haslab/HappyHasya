@@ -18,20 +18,40 @@
           navigator.serviceWorker.register('/sw.js')
             .then(reg => {
               console.log('[PWA] Service Worker registered!', reg);
+              
+              // Force checking for updates immediately on load/refresh
+              reg.update();
+
               // Force page reload on service worker updates to break aggressive caches
               reg.onupdatefound = () => {
                 const installingWorker = reg.installing;
                 if (installingWorker) {
                   installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                      console.log('[PWA] New update installed! Reloading to apply fresh assets...');
-                      window.location.reload();
+                      console.log('[PWA] New update installed! Setting flag for safe reload...');
+                      localStorage.setItem('pwa-update-ready', 'true');
                     }
                   };
                 }
               };
             })
             .catch(err => console.error('[PWA] Service Worker registration failed:', err));
+
+          // Also check for service worker updates when the page becomes visible again (focus/tab switches)
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+              navigator.serviceWorker.ready.then(reg => {
+                reg.update();
+              });
+            }
+          });
+
+          // Check for service worker updates periodically every 5 minutes in the background
+          setInterval(() => {
+            navigator.serviceWorker.ready.then(reg => {
+              reg.update();
+            });
+          }, 300000); // 5 minutes
         });
       }
     </script>

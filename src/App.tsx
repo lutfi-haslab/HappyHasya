@@ -89,6 +89,24 @@ export default function App() {
     };
   }, []);
 
+  // Safe background PWA update applicator: only reloads when user is on the Home screen (Beranda)
+  useEffect(() => {
+    const checkForUpdates = () => {
+      if (activeTab === 'home' && localStorage.getItem('pwa-update-ready') === 'true') {
+        console.log('[PWA] Applying pending update safely while on Home screen...');
+        localStorage.removeItem('pwa-update-ready');
+        window.location.reload();
+      }
+    };
+    
+    // Check immediately when tab changes
+    checkForUpdates();
+    
+    // Also check periodically every 10 seconds
+    const interval = setInterval(checkForUpdates, 10000);
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
   const handleInstallApp = async () => {
     if (!deferredPrompt) return;
     playTapSound();
@@ -484,7 +502,7 @@ export default function App() {
       </header>
  
       {/* PRIMARY ACTIVE INTERACTIVE PLAYGROUND VIEW */}
-      <main className="flex-1 w-full overflow-y-auto py-4 px-4 flex items-center justify-center">
+      <main className="flex-1 w-full overflow-y-auto py-3 px-3 md:py-6 md:px-6 flex flex-col items-center min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -492,7 +510,11 @@ export default function App() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="w-full h-full"
+            className={`w-full min-h-full flex flex-col items-center ${
+              activeTab === 'tracing' 
+                ? 'justify-center my-auto' 
+                : 'justify-start py-2'
+            }`}
           >
             {renderActiveSection()}
           </motion.div>

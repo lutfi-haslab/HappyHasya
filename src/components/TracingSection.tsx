@@ -410,9 +410,177 @@ const TRACING_MODELS_POOL: TracingModel[] = [
   }
 ];
 
+const TRACING_NUMBERS_POOL: TracingModel[] = [
+  {
+    letter: '1',
+    name: 'Jerapah',
+    emoji: '🦒',
+    color: 'text-red-500 bg-red-55 border-red-200',
+    path: "M 35 30 L 50 15 L 50 85 M 35 85 L 65 85",
+    checkpoints: [
+      { x: 0.35, y: 0.3, label: 'Mulai Bendera', hit: false },
+      { x: 0.5, y: 0.15, label: 'Puncak Tiang', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.5, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 2 },
+      { x: 0.35, y: 0.85, label: 'Kaki Kiri', hit: false },
+      { x: 0.65, y: 0.85, label: 'Kaki Kanan', hit: false, prevIndex: 4 }
+    ],
+    guides: "Mulai dari bendera kecil di kiri 🚩 lalu turun tegak ke bawah, dan beri garis tidur di bawah!"
+  },
+  {
+    letter: '2',
+    name: 'Bebek',
+    emoji: '🦆',
+    color: 'text-orange-500 bg-orange-55 border-orange-200',
+    path: "M 30 30 C 30 10, 70 10, 70 35 C 70 60, 30 85, 30 85 L 70 85",
+    checkpoints: [
+      { x: 0.3, y: 0.3, label: 'Kepala Mulai', hit: false },
+      { x: 0.5, y: 0.15, label: 'Lengkung Atas', hit: false, prevIndex: 0 },
+      { x: 0.7, y: 0.3, label: 'Lengkung Belakang', hit: false, prevIndex: 1 },
+      { x: 0.5, y: 0.55, label: 'Leher Miring', hit: false, prevIndex: 2 },
+      { x: 0.3, y: 0.85, label: 'Sudut Kiri Bawah', hit: false, prevIndex: 3 },
+      { x: 0.7, y: 0.85, label: 'Kaki Kanan', hit: false, prevIndex: 4 }
+    ],
+    guides: "Buat lengkungan kepala bebek meliuk 🦆 lalu tarik lurus ke samping kanan!"
+  },
+  {
+    letter: '3',
+    name: 'Monyet',
+    emoji: '🐒',
+    color: 'text-pink-500 bg-pink-55 border-pink-200',
+    path: "M 30 20 C 60 20, 60 48, 45 48 C 65 48, 65 80, 30 80",
+    checkpoints: [
+      { x: 0.3, y: 0.2, label: 'Mulai Atas', hit: false },
+      { x: 0.55, y: 0.2, label: 'Lengkung Puncak', hit: false, prevIndex: 0 },
+      { x: 0.45, y: 0.48, label: 'Lekuk Tengah', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.64, label: 'Lengkung Bawah', hit: false, prevIndex: 2 },
+      { x: 0.3, y: 0.8, label: 'Lengkung Dasar', hit: false, prevIndex: 3 }
+    ],
+    guides: "Lengkung atas seperti sayap burung 🐦 lalu lengkung bawah lagi!"
+  },
+  {
+    letter: '4',
+    name: 'Kupu-kupu',
+    emoji: '🦋',
+    color: 'text-green-500 bg-green-55 border-green-200',
+    path: "M 55 15 L 25 60 L 75 60 M 55 15 L 55 85",
+    checkpoints: [
+      { x: 0.55, y: 0.15, label: 'Puncak Miring', hit: false },
+      { x: 0.25, y: 0.6, label: 'Sudut Kiri', hit: false, prevIndex: 0 },
+      { x: 0.75, y: 0.6, label: 'Garis Kanan', hit: false, prevIndex: 1 },
+      { x: 0.55, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.55, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 3 }
+    ],
+    guides: "Luncurkan garis miring ke kiri 🛝 geser ke kanan, lalu tarik tiang lurus ke bawah!"
+  },
+  {
+    letter: '5',
+    name: 'Bintang',
+    emoji: '⭐',
+    color: 'text-blue-500 bg-blue-55 border-blue-200',
+    path: "M 65 15 L 35 15 L 35 48 C 65 48, 65 85, 30 85",
+    checkpoints: [
+      { x: 0.65, y: 0.15, label: 'Topi Kanan', hit: false },
+      { x: 0.35, y: 0.15, label: 'Topi Kiri', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.48, label: 'Tiang Bawah', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.58, label: 'Lengkung Perut', hit: false, prevIndex: 2 },
+      { x: 0.3, y: 0.85, label: 'Pantat Dasar', hit: false, prevIndex: 3 }
+    ],
+    guides: "Tarik tiang pendek ke bawah 📏 beri perut gendut melengkung, lalu buat topi lebar!"
+  },
+  {
+    letter: '6',
+    name: 'Ceri',
+    emoji: '🍒',
+    color: 'text-cyan-500 bg-cyan-55 border-cyan-200',
+    path: "M 60 15 C 30 25, 20 60, 35 75 C 50 90, 65 80, 50 60 C 35 48, 30 60, 35 75",
+    checkpoints: [
+      { x: 0.6, y: 0.15, label: 'Mulai Atas', hit: false },
+      { x: 0.35, y: 0.35, label: 'Turun Miring', hit: false, prevIndex: 0 },
+      { x: 0.3, y: 0.65, label: 'Lengkung Kiri', hit: false, prevIndex: 1 },
+      { x: 0.5, y: 0.85, label: 'Dasar Bulat', hit: false, prevIndex: 2 },
+      { x: 0.65, y: 0.65, label: 'Kanan Bulat', hit: false, prevIndex: 3 },
+      { x: 0.5, y: 0.55, label: 'Tengah Bulat', hit: false, prevIndex: 4 }
+    ],
+    guides: "Meluncur miring ke bawah kiri 🛝 lalu putar perut bulat penuh seperti siput!"
+  },
+  {
+    letter: '7',
+    name: 'Pelangi',
+    emoji: '🌈',
+    color: 'text-purple-500 bg-purple-55 border-purple-200',
+    path: "M 30 20 L 70 20 L 45 85",
+    checkpoints: [
+      { x: 0.3, y: 0.2, label: 'Mulai Kiri Atas', hit: false },
+      { x: 0.7, y: 0.2, label: 'Sudut Kanan Atas', hit: false, prevIndex: 0 },
+      { x: 0.55, y: 0.5, label: 'Garis Tengah', hit: false, prevIndex: 1 },
+      { x: 0.45, y: 0.85, label: 'Ujung Kiri Bawah', hit: false, prevIndex: 2 }
+    ],
+    guides: "Geser lurus ke kanan ➡️ lalu luncurkan tiang miring ke bawah kiri!"
+  },
+  {
+    letter: '8',
+    name: 'Gurita',
+    emoji: '🐙',
+    color: 'text-amber-500 bg-amber-55 border-amber-200',
+    path: "M 50 50 C 30 40, 30 15, 50 15 C 70 15, 70 40, 50 50 C 30 60, 30 85, 50 85 C 70 85, 70 60, 50 50 Z",
+    checkpoints: [
+      { x: 0.5, y: 0.5, label: 'Titik Tengah', hit: false },
+      { x: 0.3, y: 0.3, label: 'Kiri Atas', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.15, label: 'Puncak Atas', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.3, label: 'Kanan Atas', hit: false, prevIndex: 2 },
+      { x: 0.5, y: 0.5, label: 'Tengah Silang', hit: false, prevIndex: 3 },
+      { x: 0.3, y: 0.7, label: 'Kiri Bawah', hit: false, prevIndex: 4 },
+      { x: 0.5, y: 0.85, label: 'Dasar Bawah', hit: false, prevIndex: 5 },
+      { x: 0.7, y: 0.7, label: 'Kanan Bawah', hit: false, prevIndex: 6 },
+      { x: 0.5, y: 0.5, label: 'Selesai Tengah', hit: false, prevIndex: 7 }
+    ],
+    guides: "Putar lingkaran kecil di atas 🔄 lalu sambung dengan lingkaran di bawah seperti boneka salju! ⛄"
+  },
+  {
+    letter: '9',
+    name: 'Balon',
+    emoji: '🎈',
+    color: 'text-rose-500 bg-rose-55 border-rose-200',
+    path: "M 65 50 C 65 15, 35 15, 35 35 C 35 55, 65 55, 65 50 L 65 85 C 65 95, 35 95, 35 85",
+    checkpoints: [
+      { x: 0.65, y: 0.35, label: 'Mulai Bulat', hit: false },
+      { x: 0.5, y: 0.15, label: 'Puncak Bulat', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.35, label: 'Kiri Bulat', hit: false, prevIndex: 1 },
+      { x: 0.5, y: 0.5, label: 'Bawah Bulat', hit: false, prevIndex: 2 },
+      { x: 0.65, y: 0.35, label: 'Kembali Bulat', hit: false, prevIndex: 3 },
+      { x: 0.65, y: 0.65, label: 'Tiang Bawah', hit: false, prevIndex: 4 },
+      { x: 0.65, y: 0.85, label: 'Ujung Tiang', hit: false, prevIndex: 5 },
+      { x: 0.45, y: 0.85, label: 'Buntut Kiri', hit: false, prevIndex: 6 }
+    ],
+    guides: "Buat kepala balon bulat di atas 🎈 lalu luncurkan ekor manis ke bawah kiri!"
+  },
+  {
+    letter: '10',
+    name: 'Apel',
+    emoji: '🍎',
+    color: 'text-teal-500 bg-teal-55 border-teal-200',
+    path: "M 30 30 L 40 15 L 40 85 M 70 15 C 55 15, 55 85, 70 85 C 85 85, 85 15, 70 15 Z",
+    checkpoints: [
+      { x: 0.3, y: 0.3, label: 'Mulai Satu', hit: false },
+      { x: 0.4, y: 0.15, label: 'Atas Satu', hit: false, prevIndex: 0 },
+      { x: 0.4, y: 0.85, label: 'Bawah Satu', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.15, label: 'Atas Nol', hit: false },
+      { x: 0.58, y: 0.5, label: 'Kiri Nol', hit: false, prevIndex: 3 },
+      { x: 0.7, y: 0.85, label: 'Bawah Nol', hit: false, prevIndex: 4 },
+      { x: 0.82, y: 0.5, label: 'Kanan Nol', hit: false, prevIndex: 5 },
+      { x: 0.7, y: 0.15, label: 'Kembali Nol', hit: false, prevIndex: 6 }
+    ],
+    guides: "Tulis angka satu lurus ke bawah 👇 lalu putar lingkaran telur nol besar di sampingnya! 🥚"
+  }
+];
+
 export default function TracingSection({ onLogTracing }: TracingSectionProps) {
+  const [poolType, setPoolType] = useState<'letters' | 'numbers'>('letters');
   const [modelIndex, setModelIndex] = useState(0);
-  const currentModel = TRACING_MODELS_POOL[modelIndex];
+
+  const currentPool = poolType === 'letters' ? TRACING_MODELS_POOL : TRACING_NUMBERS_POOL;
+  const currentModel = currentPool[modelIndex];
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -424,7 +592,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
   // Brush color options
   const [brushColor, setBrushColor] = useState('#FF85A1');
 
-  // Load / Reload Letter Tracing Map
+  // Load / Reload Letter/Number Tracing Map
   useEffect(() => {
     setActiveCheckpoints(
       currentModel.checkpoints.map(cp => ({ ...cp, hit: false }))
@@ -432,8 +600,8 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     setIsCompleted(false);
     setIsCompleting(false);
     clearCanvas();
-    speakIndonesian(`Ayo kita menulis huruf ${currentModel.letter}! Lakukan dengan jarimu!`);
-  }, [modelIndex]);
+    speakIndonesian(`Ayo kita menulis ${poolType === 'letters' ? 'huruf' : 'angka'} ${currentModel.letter}! Lakukan dengan jarimu!`);
+  }, [modelIndex, poolType]);
 
   // Adjust canvas bounds dynamically on screen refresh
   useEffect(() => {
@@ -539,7 +707,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
           setIsCompleting(false);
           playSuccessSound();
           onLogTracing(currentModel.letter);
-          speakIndonesian(`Hebat sekali! Keren! Kamu berhasil menulis huruf ${currentModel.letter}! Jagoan kecil!`);
+          speakIndonesian(`Hebat sekali! Keren! Kamu berhasil menulis ${poolType === 'letters' ? 'huruf' : 'angka'} ${currentModel.letter}! Jagoan kecil!`);
         }, 1200); // 1200ms delay gives ample time to finish drawing the line completely
       }
     }
@@ -622,7 +790,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
   // Skip / Change Letter Trigger
   const handleNextModel = () => {
     playTapSound();
-    const nextIndex = (modelIndex + 1) % TRACING_MODELS_POOL.length;
+    const nextIndex = (modelIndex + 1) % currentPool.length;
     setModelIndex(nextIndex);
   };
 
@@ -631,14 +799,50 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
       {/* Dynamic Instruction panel */}
       <Mascot
         message={isCompleted 
-          ? `Keren! Huruf "${currentModel.letter}" selesai ditulis! 🌟` 
+          ? `Keren! ${poolType === 'letters' ? 'Huruf' : 'Angka'} "${currentModel.letter}" selesai ditulis! 🌟` 
           : `${currentModel.guides}`
         }
         mood={isCompleted ? 'victory' : 'happy'}
+        compact={true}
       />
 
+      {/* Playful Category Switcher */}
+      <div className="grid grid-cols-2 gap-3.5 w-full max-w-sm mt-3 mb-2 flex-shrink-0">
+        <button
+          onClick={() => {
+            playTapSound();
+            setPoolType('letters');
+            setModelIndex(0);
+          }}
+          className={`relative py-3 px-4 rounded-3xl font-black text-sm transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-1 border-2 border-b-4 shadow-sm hover:scale-105 active:scale-95 active:translate-y-0.5 active:border-b-2 ${
+            poolType === 'letters'
+              ? 'bg-[#FF85A1] border-[#FF85A1] border-b-[#e06c87] text-white shadow-md scale-102'
+              : 'bg-white border-[#FFE8A3] border-b-[#FFE8A3]/80 text-[#FF85A1] hover:bg-[#FFF0F3]'
+          }`}
+        >
+          <span className="text-2xl animate-pulse">🔤</span>
+          <span className="font-black text-xs uppercase tracking-wide">Huruf A - Z</span>
+        </button>
+        
+        <button
+          onClick={() => {
+            playTapSound();
+            setPoolType('numbers');
+            setModelIndex(0);
+          }}
+          className={`relative py-3 px-4 rounded-3xl font-black text-sm transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-1 border-2 border-b-4 shadow-sm hover:scale-105 active:scale-95 active:translate-y-0.5 active:border-b-2 ${
+            poolType === 'numbers'
+              ? 'bg-[#20BFA9] border-[#20BFA9] border-b-[#189E8B] text-white shadow-md scale-102'
+              : 'bg-white border-[#FFE8A3] border-b-[#FFE8A3]/80 text-[#20BFA9] hover:bg-[#F0FDFA]'
+          }`}
+        >
+          <span className="text-2xl animate-pulse">🔢</span>
+          <span className="font-black text-xs uppercase tracking-wide">Angka 1 - 10</span>
+        </button>
+      </div>
+
       {/* Premium Compact Top Controller (Single Row Layout) */}
-      <div className="w-full max-w-sm bg-white border-2 border-b-4 border-[#FFE8A3] rounded-[1.5rem] px-3.5 py-2 mt-3 mb-2 flex items-center justify-between shadow-sm flex-shrink-0">
+      <div className="w-full max-w-sm bg-white border-2 border-b-4 border-[#FFE8A3] rounded-[1.5rem] px-3.5 py-1.5 mt-1.5 mb-1.5 flex items-center justify-between shadow-sm flex-shrink-0">
         {/* Left Side: Current Letter & Vocabulary Word */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-[#20BFA9] rounded-xl flex items-center justify-center text-white text-base font-black shadow-inner flex-shrink-0">
@@ -671,7 +875,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
       <div 
         ref={containerRef}
         id="tracing-viewport"
-        className="w-full max-w-sm h-64 md:h-[400px] border-4 border-[#FFE8A3] border-b-[8px] md:border-b-[12px] bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative mb-4 overflow-hidden flex items-center justify-center cursor-crosshair flex-shrink-0 touch-none"
+        className="w-full max-w-sm h-[32dvh] min-h-[240px] max-h-[300px] md:h-[400px] md:max-h-none border-4 border-[#FFE8A3] border-b-[8px] md:border-b-[12px] bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-xl relative mb-4 overflow-hidden flex items-center justify-center cursor-crosshair flex-shrink-0 touch-none"
       >
         {/* Beautiful vector skeletal letter template guiding behind */}
         <svg 
@@ -759,7 +963,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
           onClick={handleNextModel}
           className="flex-1 bg-[#FF85A1] hover:bg-[#e06c87] border-2 border-b-4 border-[#e06c87] active:border-b-2 text-white rounded-2xl p-2.5 flex items-center justify-center gap-1.5 font-black text-base shadow-md active:translate-y-0.5 transition-all cursor-pointer"
         >
-          <span>Huruf Lain</span>
+          <span>{poolType === 'letters' ? 'Huruf Lain' : 'Angka Lain'}</span>
           <ArrowRight className="w-4.5 h-4.5" />
         </button>
       </div>
@@ -797,7 +1001,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
                 <span>Sangat Hebat!</span>
               </h3>
               <p className="text-gray-500 font-extrabold text-xs mt-1 mb-5 leading-normal relative z-10 leading-relaxed font-black">
-                Kamu pandai menulis huruf <span className="text-[#FF85A1] text-lg font-black">{currentModel.letter}</span>!<br />Hebat sekali! ✍️
+                Kamu pandai menulis {poolType === 'letters' ? 'huruf' : 'angka'} <span className="text-[#FF85A1] text-lg font-black">{currentModel.letter}</span>!<br />Hebat sekali! ✍️
               </p>
 
               <div className="w-full space-y-3.5 relative z-10">
@@ -817,7 +1021,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
                   onClick={handleNextModel}
                   className="w-full bg-[#20BFA9] hover:bg-[#189E8B] text-white font-black text-lg p-3.5 rounded-2xl border-b-4 border-[#189E8B] shadow-lg hover:border-b-2 active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Ganti Huruf 🚀</span>
+                  <span>{poolType === 'letters' ? 'Ganti Huruf 🚀' : 'Ganti Angka 🚀'}</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
