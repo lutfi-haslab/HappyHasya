@@ -14,8 +14,8 @@ interface TracingModel {
   name: string;
   emoji: string;
   color: string;
-  // Node coordinates inside the box to validate sequence or progress
-  checkpoints: { x: number; y: number; label: string; hit: boolean }[];
+  // Node coordinates inside the box to validate sequence or progress, with optional parent connection indices
+  checkpoints: { x: number; y: number; label: string; hit: boolean; prevIndex?: number }[];
   guides: string; // Draw instruction for structural guidance
   path: string; // The SVG skeletal path!
 }
@@ -25,16 +25,16 @@ const TRACING_MODELS_POOL: TracingModel[] = [
     letter: 'A',
     name: 'Apel',
     emoji: '🍎',
-    color: 'text-red-500 bg-red-50 border-red-200',
+    color: 'text-red-500 bg-red-55 border-red-200',
     path: "M 50 15 L 20 85 M 50 15 L 80 85 M 35 55 L 65 55",
     checkpoints: [
       { x: 0.5, y: 0.15, label: 'Atas', hit: false },
-      { x: 0.35, y: 0.5, label: 'Kiri Tengah', hit: false },
-      { x: 0.2, y: 0.85, label: 'Bawah Kiri', hit: false },
-      { x: 0.65, y: 0.5, label: 'Kanan Tengah', hit: false },
-      { x: 0.8, y: 0.85, label: 'Bawah Kanan', hit: false },
-      { x: 0.5, y: 0.55, label: 'Jembatan Tengah', hit: false },
-      { x: 0.65, y: 0.55, label: 'Jembatan Kanan', hit: false },
+      { x: 0.35, y: 0.5, label: 'Kiri Tengah', hit: false, prevIndex: 0 },
+      { x: 0.2, y: 0.85, label: 'Bawah Kiri', hit: false, prevIndex: 1 },
+      { x: 0.65, y: 0.5, label: 'Kanan Tengah', hit: false, prevIndex: 0 },
+      { x: 0.8, y: 0.85, label: 'Bawah Kanan', hit: false, prevIndex: 3 },
+      { x: 0.5, y: 0.55, label: 'Jembatan Tengah', hit: false, prevIndex: 1 },
+      { x: 0.65, y: 0.55, label: 'Jembatan Kanan', hit: false, prevIndex: 5 },
     ],
     guides: "Mulai dari atas 👆 lalu ke bawah kiri, ke bawah kanan, dan buat jembatan di tengah!"
   },
@@ -42,16 +42,16 @@ const TRACING_MODELS_POOL: TracingModel[] = [
     letter: 'B',
     name: 'Bebek',
     emoji: '🦆',
-    color: 'text-orange-500 bg-orange-50 border-orange-200',
+    color: 'text-orange-500 bg-orange-55 border-orange-200',
     path: "M 35 15 L 35 85 M 35 15 C 65 15, 65 48, 35 48 C 70 48, 70 85, 35 85",
     checkpoints: [
       { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
-      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false },
-      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false },
-      { x: 0.6, y: 0.3, label: 'Lengkung Atas', hit: false },
-      { x: 0.45, y: 0.48, label: 'Lengkung Tengah', hit: false },
-      { x: 0.65, y: 0.68, label: 'Lengkung Bawah', hit: false },
-      { x: 0.45, y: 0.85, label: 'Lengkung Bawah Akhir', hit: false },
+      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.3, label: 'Lengkung Atas', hit: false, prevIndex: 0 },
+      { x: 0.45, y: 0.48, label: 'Lengkung Tengah', hit: false, prevIndex: 3 },
+      { x: 0.65, y: 0.68, label: 'Lengkung Bawah', hit: false, prevIndex: 4 },
+      { x: 0.45, y: 0.85, label: 'Lengkung Bawah Akhir', hit: false, prevIndex: 5 },
     ],
     guides: "Tarik tiang lurus dari atas ke bawah 👇 lalu bentuk perut bebek melengkung!"
   },
@@ -59,14 +59,14 @@ const TRACING_MODELS_POOL: TracingModel[] = [
     letter: 'C',
     name: 'Ceri',
     emoji: '🍒',
-    color: 'text-pink-500 bg-pink-50 border-pink-200',
+    color: 'text-pink-500 bg-pink-55 border-pink-200',
     path: "M 70 20 C 35 20, 35 80, 70 80",
     checkpoints: [
       { x: 0.7, y: 0.2, label: 'Ujung Atas', hit: false },
-      { x: 0.45, y: 0.22, label: 'Puncak Lengkung', hit: false },
-      { x: 0.35, y: 0.5, label: 'Tengah', hit: false },
-      { x: 0.45, y: 0.78, label: 'Dasar Lengkung', hit: false },
-      { x: 0.7, y: 0.8, label: 'Ujung Bawah', hit: false },
+      { x: 0.45, y: 0.22, label: 'Puncak Lengkung', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.5, label: 'Tengah', hit: false, prevIndex: 1 },
+      { x: 0.45, y: 0.78, label: 'Dasar Lengkung', hit: false, prevIndex: 2 },
+      { x: 0.7, y: 0.8, label: 'Ujung Bawah', hit: false, prevIndex: 3 },
     ],
     guides: "Buat bulan sabit besar melengkung dari atas ke bawah!"
   },
@@ -74,16 +74,16 @@ const TRACING_MODELS_POOL: TracingModel[] = [
     letter: 'D',
     name: 'Domba',
     emoji: '🐑',
-    color: 'text-green-500 bg-green-50 border-green-200',
+    color: 'text-green-500 bg-green-55 border-green-200',
     path: "M 35 15 L 35 85 M 35 15 C 75 15, 75 85, 35 85",
     checkpoints: [
       { x: 0.35, y: 0.15, label: 'Kepala Tiang', hit: false },
-      { x: 0.35, y: 0.5, label: 'Badan Tiang', hit: false },
-      { x: 0.35, y: 0.85, label: 'Kaki Tiang', hit: false },
-      { x: 0.6, y: 0.3, label: 'Perut Atas', hit: false },
-      { x: 0.7, y: 0.5, label: 'Perut Tengah', hit: false },
-      { x: 0.6, y: 0.7, label: 'Perut Bawah', hit: false },
-      { x: 0.45, y: 0.82, label: 'Perut Akhir', hit: false },
+      { x: 0.35, y: 0.5, label: 'Badan Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Kaki Tiang', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.3, label: 'Perut Atas', hit: false, prevIndex: 0 },
+      { x: 0.7, y: 0.5, label: 'Perut Tengah', hit: false, prevIndex: 3 },
+      { x: 0.6, y: 0.7, label: 'Perut Bawah', hit: false, prevIndex: 4 },
+      { x: 0.45, y: 0.82, label: 'Perut Akhir', hit: false, prevIndex: 5 },
     ],
     guides: "Tarik garis lurus ke bawah 👇 lalu buat lingkaran perut besar di kanan!"
   },
@@ -91,47 +91,322 @@ const TRACING_MODELS_POOL: TracingModel[] = [
     letter: 'E',
     name: 'Es Krim',
     emoji: '🍦',
-    color: 'text-blue-500 bg-blue-50 border-blue-200',
+    color: 'text-blue-500 bg-blue-55 border-blue-200',
     path: "M 35 15 L 35 85 M 35 15 L 70 15 M 35 50 L 65 50 M 35 85 L 70 85",
     checkpoints: [
       { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
-      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false },
-      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false },
-      { x: 0.7, y: 0.15, label: 'Sayap Atas', hit: false },
-      { x: 0.6, y: 0.5, label: 'Sayap Tengah', hit: false },
-      { x: 0.7, y: 0.85, label: 'Sayap Bawah', hit: false },
+      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.15, label: 'Sayap Atas', hit: false, prevIndex: 0 },
+      { x: 0.6, y: 0.5, label: 'Sayap Tengah', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.85, label: 'Sayap Bawah', hit: false, prevIndex: 2 },
     ],
     guides: "Gambar garis lurus ke bawah, lalu bikin tiga sisir garis ke samping!"
+  },
+  {
+    letter: 'F',
+    name: 'Foto',
+    emoji: '📷',
+    color: 'text-cyan-500 bg-cyan-55 border-cyan-200',
+    path: "M 35 15 L 35 85 M 35 15 L 70 15 M 35 50 L 65 50",
+    checkpoints: [
+      { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
+      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.15, label: 'Kanan Atas', hit: false, prevIndex: 0 },
+      { x: 0.6, y: 0.5, label: 'Kanan Tengah', hit: false, prevIndex: 1 },
+    ],
+    guides: "Garis lurus ke bawah 👇 lalu buat dua garis ke samping di atas dan tengah!"
+  },
+  {
+    letter: 'G',
+    name: 'Gajah',
+    emoji: '🐘',
+    color: 'text-purple-500 bg-purple-55 border-purple-200',
+    path: "M 70 25 C 35 15, 35 85, 70 80 L 70 55 L 55 55",
+    checkpoints: [
+      { x: 0.7, y: 0.25, label: 'Mulai Atas', hit: false },
+      { x: 0.35, y: 0.5, label: 'Lengkung Kiri', hit: false, prevIndex: 0 },
+      { x: 0.7, y: 0.8, label: 'Lengkung Bawah', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.55, label: 'Naik Tengah', hit: false, prevIndex: 2 },
+      { x: 0.55, y: 0.55, label: 'Masuk Dalam', hit: false, prevIndex: 3 },
+    ],
+    guides: "Buat lengkungan besar melingkar 🔄 lalu belok ke dalam di tengah!"
+  },
+  {
+    letter: 'H',
+    name: 'Harimau',
+    emoji: '🐯',
+    color: 'text-amber-500 bg-amber-55 border-amber-200',
+    path: "M 30 15 L 30 85 M 70 15 L 70 85 M 30 50 L 70 50",
+    checkpoints: [
+      { x: 0.3, y: 0.15, label: 'Tiang Kiri Atas', hit: false },
+      { x: 0.3, y: 0.85, label: 'Tiang Kiri Bawah', hit: false, prevIndex: 0 },
+      { x: 0.7, y: 0.15, label: 'Tiang Kanan Atas', hit: false },
+      { x: 0.7, y: 0.85, label: 'Tiang Kanan Bawah', hit: false, prevIndex: 2 },
+      { x: 0.5, y: 0.5, label: 'Jembatan Tengah', hit: false, prevIndex: 1 },
+    ],
+    guides: "Gambar dua tiang lurus berdiri 🧍🧍 lalu hubungkan dengan jembatan di tengah!"
+  },
+  {
+    letter: 'I',
+    name: 'Ikan',
+    emoji: '🐟',
+    color: 'text-sky-500 bg-sky-55 border-sky-200',
+    path: "M 50 20 L 50 80 M 35 20 L 65 20 M 35 80 L 65 80",
+    checkpoints: [
+      { x: 0.5, y: 0.2, label: 'Atas Tiang', hit: false },
+      { x: 0.5, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.8, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+    ],
+    guides: "Tarik tiang lurus ke bawah, lalu beri topi dan kaki kecil di atas dan bawah!"
+  },
+  {
+    letter: 'J',
+    name: 'Jeruk',
+    emoji: '🍊',
+    color: 'text-yellow-500 bg-yellow-55 border-yellow-200',
+    path: "M 65 15 L 65 70 C 65 90, 35 90, 35 70",
+    checkpoints: [
+      { x: 0.65, y: 0.15, label: 'Mulai Atas', hit: false },
+      { x: 0.65, y: 0.5, label: 'Garis Tengah', hit: false, prevIndex: 0 },
+      { x: 0.65, y: 0.75, label: 'Lekuk Bawah', hit: false, prevIndex: 1 },
+      { x: 0.45, y: 0.85, label: 'Lengkung Kiri', hit: false, prevIndex: 2 },
+    ],
+    guides: "Garis lurus ke bawah lalu melengkung manis ke kiri seperti payung! ☔"
+  },
+  {
+    letter: 'K',
+    name: 'Kucing',
+    emoji: '🐱',
+    color: 'text-yellow-600 bg-yellow-55 border-yellow-200',
+    path: "M 35 15 L 35 85 M 65 15 L 35 50 L 65 85",
+    checkpoints: [
+      { x: 0.35, y: 0.15, label: 'Tiang Atas', hit: false },
+      { x: 0.35, y: 0.85, label: 'Tiang Bawah', hit: false, prevIndex: 0 },
+      { x: 0.65, y: 0.15, label: 'Tangan Kanan Atas', hit: false },
+      { x: 0.38, y: 0.5, label: 'Pertemuan Tengah', hit: false, prevIndex: 2 },
+      { x: 0.65, y: 0.85, label: 'Kaki Kanan Bawah', hit: false, prevIndex: 3 },
+    ],
+    guides: "Tarik tiang lurus ke bawah 🐈 lalu buat mulut mencucup terbuka ke kanan!"
+  },
+  {
+    letter: 'L',
+    name: 'Lebah',
+    emoji: '🐝',
+    color: 'text-emerald-500 bg-emerald-55 border-emerald-200',
+    path: "M 35 15 L 35 85 L 70 85",
+    checkpoints: [
+      { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
+      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.85, label: 'Ujung Kanan', hit: false, prevIndex: 2 },
+    ],
+    guides: "Tarik tiang lurus ke bawah 👇 lalu tidur santai ke kanan!"
+  },
+  {
+    letter: 'M',
+    name: 'Monyet',
+    emoji: '🐒',
+    color: 'text-amber-600 bg-amber-55 border-amber-200',
+    path: "M 25 85 L 25 15 L 50 50 L 75 15 L 75 85",
+    checkpoints: [
+      { x: 0.25, y: 0.85, label: 'Kiri Bawah', hit: false },
+      { x: 0.25, y: 0.15, label: 'Kiri Atas', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.5, label: 'Lembah Tengah', hit: false, prevIndex: 1 },
+      { x: 0.75, y: 0.15, label: 'Kanan Atas', hit: false, prevIndex: 2 },
+      { x: 0.75, y: 0.85, label: 'Kanan Bawah', hit: false, prevIndex: 3 },
+    ],
+    guides: "Gambar dua tiang tinggi, lalu buat lembah seru di tengahnya! ⛰️"
+  },
+  {
+    letter: 'N',
+    name: 'Nanas',
+    emoji: '🍍',
+    color: 'text-lime-500 bg-lime-55 border-lime-200',
+    path: "M 30 85 L 30 15 L 70 85 L 70 15",
+    checkpoints: [
+      { x: 0.3, y: 0.85, label: 'Kiri Bawah', hit: false },
+      { x: 0.3, y: 0.15, label: 'Kiri Atas', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.5, label: 'Luncuran Tengah', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.85, label: 'Kanan Bawah', hit: false, prevIndex: 2 },
+      { x: 0.7, y: 0.15, label: 'Kanan Atas', hit: false, prevIndex: 3 },
+    ],
+    guides: "Gambar dua tiang, lalu luncurkan garis miring dari kiri atas ke kanan bawah! 🛝"
   },
   {
     letter: 'O',
     name: 'Onta',
     emoji: '🐫',
-    color: 'text-violet-500 bg-violet-50 border-violet-200',
+    color: 'text-violet-500 bg-violet-55 border-violet-200',
     path: "M 50 15 C 20 15, 20 85, 50 85 C 80 85, 80 15, 50 15 Z",
     checkpoints: [
       { x: 0.5, y: 0.15, label: 'Ujung Atas', hit: false },
-      { x: 0.25, y: 0.5, label: 'Kiri Tengah', hit: false },
-      { x: 0.5, y: 0.85, label: 'Ujung Bawah', hit: false },
-      { x: 0.75, y: 0.5, label: 'Kanan Tengah', hit: false },
-      { x: 0.55, y: 0.18, label: 'Kembali Atas', hit: false },
+      { x: 0.25, y: 0.5, label: 'Kiri Tengah', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.85, label: 'Ujung Bawah', hit: false, prevIndex: 1 },
+      { x: 0.75, y: 0.5, label: 'Kanan Tengah', hit: false, prevIndex: 2 },
+      { x: 0.55, y: 0.18, label: 'Kembali Atas', hit: false, prevIndex: 3 },
     ],
     guides: "Putar lingkaran besar seperti donat lezat! 🍩"
+  },
+  {
+    letter: 'P',
+    name: 'Pisang',
+    emoji: '🍌',
+    color: 'text-yellow-500 bg-yellow-55 border-yellow-200',
+    path: "M 35 15 L 35 85 M 35 15 C 65 15, 65 48, 35 48",
+    checkpoints: [
+      { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
+      { x: 0.35, y: 0.5, label: 'Tengah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.3, label: 'Balon Atas Kanan', hit: false, prevIndex: 0 },
+      { x: 0.45, y: 0.48, label: 'Balon Selesai', hit: false, prevIndex: 3 },
+    ],
+    guides: "Tarik tiang lurus ke bawah, lalu bikin gelembung kepala kecil di atas kanan!"
+  },
+  {
+    letter: 'Q',
+    name: 'Quran',
+    emoji: '📖',
+    color: 'text-teal-500 bg-teal-55 border-teal-200',
+    path: "M 50 15 C 20 15, 20 75, 50 75 C 80 75, 80 15, 50 15 Z M 65 60 L 80 80",
+    checkpoints: [
+      { x: 0.5, y: 0.15, label: 'Atas Bulat', hit: false },
+      { x: 0.25, y: 0.45, label: 'Kiri Bulat', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.75, label: 'Bawah Bulat', hit: false, prevIndex: 1 },
+      { x: 0.75, y: 0.45, label: 'Kanan Bulat', hit: false, prevIndex: 2 },
+      { x: 0.8, y: 0.8, label: 'Ekor Kanan', hit: false },
+    ],
+    guides: "Putar lingkaran donat 🍩 lalu beri kaki kecil meluncur di kanan bawah!"
+  },
+  {
+    letter: 'R',
+    name: 'Roti',
+    emoji: '🍞',
+    color: 'text-rose-500 bg-rose-55 border-rose-200',
+    path: "M 35 15 L 35 85 M 35 15 C 65 15, 65 48, 35 48 M 35 48 L 65 85",
+    checkpoints: [
+      { x: 0.35, y: 0.15, label: 'Atas Tiang', hit: false },
+      { x: 0.35, y: 0.85, label: 'Bawah Tiang', hit: false, prevIndex: 0 },
+      { x: 0.6, y: 0.3, label: 'Kepala Lengkung', hit: false, prevIndex: 0 },
+      { x: 0.38, y: 0.48, label: 'Leher Tengah', hit: false, prevIndex: 2 },
+      { x: 0.65, y: 0.85, label: 'Kaki Kanan Bawah', hit: false, prevIndex: 3 },
+    ],
+    guides: "Tiang lurus ke bawah, buat gelembung kepala, lalu tendang kaki miring ke kanan!"
   },
   {
     letter: 'S',
     name: 'Singa',
     emoji: '🦁',
-    color: 'text-yellow-600 bg-yellow-50 border-yellow-200',
+    color: 'text-yellow-600 bg-yellow-55 border-yellow-200',
     path: "M 65 20 C 35 15, 35 45, 50 50 C 65 55, 65 85, 35 80",
     checkpoints: [
       { x: 0.65, y: 0.2, label: 'Kepala Atas', hit: false },
-      { x: 0.4, y: 0.32, label: 'Lekuk Tengah', hit: false },
-      { x: 0.5, y: 0.5, label: 'Lekuk Bawah', hit: false },
-      { x: 0.6, y: 0.68, label: 'Lekuk Dasar', hit: false },
-      { x: 0.35, y: 0.8, label: 'Buntut', hit: false },
+      { x: 0.4, y: 0.32, label: 'Lekuk Tengah', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.5, label: 'Lekuk Bawah', hit: false, prevIndex: 1 },
+      { x: 0.6, y: 0.68, label: 'Lekuk Dasar', hit: false, prevIndex: 2 },
+      { x: 0.35, y: 0.8, label: 'Buntut', hit: false, prevIndex: 3 },
     ],
     guides: "Ular berjalan meliuk-liuk! Mengalir ke kiri lalu meliuk ke kanan!"
+  },
+  {
+    letter: 'T',
+    name: 'Telur',
+    emoji: '🥚',
+    color: 'text-zinc-500 bg-zinc-55 border-zinc-200',
+    path: "M 50 15 L 50 85 M 25 15 L 75 15",
+    checkpoints: [
+      { x: 0.5, y: 0.15, label: 'Tengah Atas', hit: false },
+      { x: 0.5, y: 0.85, label: 'Tiang Bawah', hit: false, prevIndex: 0 },
+      { x: 0.25, y: 0.15, label: 'Sayap Kiri', hit: false },
+      { x: 0.75, y: 0.15, label: 'Sayap Kanan', hit: false, prevIndex: 2 },
+    ],
+    guides: "Tarik tiang lurus ke bawah 👇 lalu pasang topi lebar di atas! 👒"
+  },
+  {
+    letter: 'U',
+    name: 'Ulat',
+    emoji: '🐛',
+    color: 'text-lime-600 bg-lime-55 border-lime-200',
+    path: "M 30 15 L 30 70 C 30 90, 70 90, 70 70 L 70 15",
+    checkpoints: [
+      { x: 0.3, y: 0.15, label: 'Kiri Atas', hit: false },
+      { x: 0.3, y: 0.6, label: 'Kiri Tengah', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.85, label: 'Bawah Lengkung', hit: false, prevIndex: 1 },
+      { x: 0.7, y: 0.6, label: 'Kanan Tengah', hit: false, prevIndex: 2 },
+      { x: 0.7, y: 0.15, label: 'Kanan Atas', hit: false, prevIndex: 3 },
+    ],
+    guides: "Luncurkan ke bawah lalu melengkung naik seperti mangkuk sup! 🥣"
+  },
+  {
+    letter: 'V',
+    name: 'Vas',
+    emoji: '🏺',
+    color: 'text-indigo-500 bg-indigo-55 border-indigo-200',
+    path: "M 25 15 L 50 85 L 75 15",
+    checkpoints: [
+      { x: 0.25, y: 0.15, label: 'Kiri Atas', hit: false },
+      { x: 0.5, y: 0.85, label: 'Sudut Bawah', hit: false, prevIndex: 0 },
+      { x: 0.75, y: 0.15, label: 'Kanan Atas', hit: false, prevIndex: 1 },
+    ],
+    guides: "Luncurkan miring ke bawah kiri, lalu daki ke kanan atas! 🧗"
+  },
+  {
+    letter: 'W',
+    name: 'Wortel',
+    emoji: '🥕',
+    color: 'text-orange-500 bg-orange-55 border-orange-200',
+    path: "M 20 15 L 35 85 L 50 40 L 65 85 L 80 15",
+    checkpoints: [
+      { x: 0.2, y: 0.15, label: 'Mulai Kiri', hit: false },
+      { x: 0.35, y: 0.85, label: 'Lembah Kiri', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.4, label: 'Puncak Tengah', hit: false, prevIndex: 1 },
+      { x: 0.65, y: 0.85, label: 'Lembah Kanan', hit: false, prevIndex: 2 },
+      { x: 0.8, y: 0.15, label: 'Ujung Kanan', hit: false, prevIndex: 3 },
+    ],
+    guides: "Luncurkan ke bawah, naik, turun lagi, lalu daki naik sekali lagi! 🎢"
+  },
+  {
+    letter: 'X',
+    name: 'Xilofon',
+    emoji: '🎹',
+    color: 'text-violet-500 bg-violet-55 border-violet-200',
+    path: "M 25 15 L 75 85 M 75 15 L 25 85",
+    checkpoints: [
+      { x: 0.25, y: 0.15, label: 'Kiri Atas', hit: false },
+      { x: 0.75, y: 0.85, label: 'Kanan Bawah', hit: false, prevIndex: 0 },
+      { x: 0.75, y: 0.15, label: 'Kanan Atas', hit: false },
+      { x: 0.25, y: 0.85, label: 'Kiri Bawah', hit: false, prevIndex: 2 },
+    ],
+    guides: "Silangkan dua garis miring seru dari sudut ke sudut! ⚔️"
+  },
+  {
+    letter: 'Y',
+    name: 'Yoyo',
+    emoji: '🪀',
+    color: 'text-emerald-500 bg-emerald-55 border-emerald-200',
+    path: "M 25 15 L 50 50 L 75 15 M 50 50 L 50 85",
+    checkpoints: [
+      { x: 0.25, y: 0.15, label: 'Kiri Atas', hit: false },
+      { x: 0.75, y: 0.15, label: 'Kanan Atas', hit: false },
+      { x: 0.5, y: 0.5, label: 'Pertemuan Tengah', hit: false, prevIndex: 0 },
+      { x: 0.5, y: 0.85, label: 'Tiang Bawah', hit: false, prevIndex: 2 },
+    ],
+    guides: "Buat huruf V kecil di atas, lalu tarik tiang lurus ke bawah! 🎈"
+  },
+  {
+    letter: 'Z',
+    name: 'Zebra',
+    emoji: '🦓',
+    color: 'text-slate-700 bg-slate-55 border-slate-200',
+    path: "M 25 15 L 75 15 L 25 85 L 75 85",
+    checkpoints: [
+      { x: 0.25, y: 0.15, label: 'Mulai Kiri', hit: false },
+      { x: 0.75, y: 0.15, label: 'Sudut Kanan Atas', hit: false, prevIndex: 0 },
+      { x: 0.25, y: 0.85, label: 'Sudut Kiri Bawah', hit: false, prevIndex: 1 },
+      { x: 0.75, y: 0.85, label: 'Akhir Kanan', hit: false, prevIndex: 2 },
+    ],
+    guides: "Tidur ke kanan, luncur miring ke bawah kiri, lalu tidur ke kanan lagi! ⚡"
   }
 ];
 
@@ -147,7 +422,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
   const [isCompleting, setIsCompleting] = useState(false);
 
   // Brush color options
-  const [brushColor, setBrushColor] = useState('#f59e0b');
+  const [brushColor, setBrushColor] = useState('#FF85A1');
 
   // Load / Reload Letter Tracing Map
   useEffect(() => {
@@ -168,7 +443,6 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
       if (canvas && container) {
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        // Redraw guidance on resize if any
       }
     };
     handleResize();
@@ -190,7 +464,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     setIsCompleted(false);
   };
 
-  const checkProximity = (clientX: number, clientY: number) => {
+  const checkProximity = (clientX: number, clientY: number, isTapEvent: boolean) => {
     const canvas = canvasRef.current;
     if (!canvas || isCompleted) return;
 
@@ -217,6 +491,36 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     if (distance < 0.12) {
       playTapSound();
       
+      // Auto-draw connection from parent checkpoint (prevIndex) ONLY for taps (Connect the Dots)!
+      // If the child is manually tracing/dragging, we do NOT auto-draw the straight line segment over it.
+      if (isTapEvent) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.strokeStyle = brushColor;
+          ctx.lineWidth = 18;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          const px = targetCp.x * canvas.width;
+          const py = targetCp.y * canvas.height;
+
+          ctx.beginPath();
+          if (targetCp.prevIndex !== undefined) {
+            const prevCp = activeCheckpoints[targetCp.prevIndex];
+            const prevX = prevCp.x * canvas.width;
+            const prevY = prevCp.y * canvas.height;
+            ctx.moveTo(prevX, prevY);
+            ctx.lineTo(px, py);
+          } else {
+            // Draw a small solid dot for the starting checkpoint of a stroke
+            ctx.arc(px, py, 9, 0, Math.PI * 2);
+            ctx.fillStyle = brushColor;
+            ctx.fill();
+          }
+          ctx.stroke();
+        }
+      }
+
       const nextCheckpoints = activeCheckpoints.map((cp, idx) => {
         if (idx === currentUnhitIdx) {
           return { ...cp, hit: true };
@@ -257,7 +561,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.moveTo(e.clientX - bounds.left, e.clientY - bounds.top);
-    checkProximity(e.clientX, e.clientY);
+    checkProximity(e.clientX, e.clientY, true);
   };
 
   const drawMoveMouse = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -270,7 +574,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     const bounds = canvas.getBoundingClientRect();
     ctx.lineTo(e.clientX - bounds.left, e.clientY - bounds.top);
     ctx.stroke();
-    checkProximity(e.clientX, e.clientY);
+    checkProximity(e.clientX, e.clientY, false);
   };
 
   const drawEndMouse = () => {
@@ -294,7 +598,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.moveTo(touch.clientX - bounds.left, touch.clientY - bounds.top);
-    checkProximity(touch.clientX, touch.clientY);
+    checkProximity(touch.clientX, touch.clientY, true);
   };
 
   const drawMoveTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -308,7 +612,7 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
     const bounds = canvas.getBoundingClientRect();
     ctx.lineTo(touch.clientX - bounds.left, touch.clientY - bounds.top);
     ctx.stroke();
-    checkProximity(touch.clientX, touch.clientY);
+    checkProximity(touch.clientX, touch.clientY, false);
   };
 
   const drawEndTouch = () => {
@@ -318,13 +622,12 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
   // Skip / Change Letter Trigger
   const handleNextModel = () => {
     playTapSound();
-    const prevIndex = modelIndex;
-    let nextIndex = (modelIndex + 1) % TRACING_MODELS_POOL.length;
+    const nextIndex = (modelIndex + 1) % TRACING_MODELS_POOL.length;
     setModelIndex(nextIndex);
   };
 
   return (
-    <div id="tracing-playground-section" className="w-full max-w-4xl mx-auto px-4 py-2 select-none flex flex-col items-center">
+    <div id="tracing-playground-section" className="w-full max-w-4xl mx-auto px-4 py-1 select-none flex flex-col items-center">
       {/* Dynamic Instruction panel */}
       <Mascot
         message={isCompleted 
@@ -334,16 +637,31 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
         mood={isCompleted ? 'victory' : 'happy'}
       />
 
-      {/* Controller Buttons top bar */}
-      <div className="flex flex-wrap gap-2.5 items-center justify-center my-2.5">
-        <span className="text-gray-500 font-black text-xs mr-1.5 block">Crayon:</span>
-        <div className="flex gap-1.5">
+      {/* Premium Compact Top Controller (Single Row Layout) */}
+      <div className="w-full max-w-sm bg-white border-2 border-b-4 border-[#FFE8A3] rounded-[1.5rem] px-3.5 py-2 mt-3 mb-2 flex items-center justify-between shadow-sm flex-shrink-0">
+        {/* Left Side: Current Letter & Vocabulary Word */}
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-[#20BFA9] rounded-xl flex items-center justify-center text-white text-base font-black shadow-inner flex-shrink-0">
+            {currentModel.letter}
+          </div>
+          <div className="flex items-center gap-1 bg-[#FFF0F3] rounded-xl px-2 py-1 border border-[#FFE8A3]/60 flex-shrink-0">
+            <span className="text-lg leading-none">{currentModel.emoji}</span>
+            <span className="text-[#FF85A1] font-black text-[10px] uppercase tracking-wide">{currentModel.name}</span>
+          </div>
+        </div>
+
+        {/* Right Side: Crayon Color Selection */}
+        <div className="flex items-center gap-1.5">
           {['#FF85A1', '#ec4899', '#4CC9F0', '#20BFA9', '#c084fc'].map((col) => (
             <button
               key={col}
               onClick={() => { playTapSound(); setBrushColor(col); }}
               style={{ backgroundColor: col }}
-              className={`w-7 h-7 md:w-9 md:h-9 rounded-full border-2 cursor-pointer transition-all hover:scale-110 active:scale-90 ${brushColor === col ? 'border-white ring-2 ring-[#FFE8A3]' : 'border-slate-100 shadow-sm'}`}
+              className={`w-6 h-6 rounded-full border cursor-pointer transition-all hover:scale-110 active:scale-90 flex-shrink-0 ${
+                brushColor === col 
+                  ? 'border-white ring-2 ring-[#FF85A1] scale-110 shadow-sm' 
+                  : 'border-slate-100 shadow-sm opacity-85'
+              }`}
             />
           ))}
         </div>
@@ -395,9 +713,9 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
                   position: 'absolute',
                   left: `${cp.x * 100}%`,
                   top: `${cp.y * 100}%`,
-                  transform: 'translate(-50%, -50%)'
+                  transform: 'translate(-50%, -50%)',
                 }}
-                className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-black border-2 shadow-md transition-all duration-300 ${
+                className={`w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-black border-2 shadow-md transition-all duration-300 z-30 pointer-events-none ${
                   cp.hit 
                     ? 'bg-[#20BFA9] border-[#189E8B] scale-110 text-white shadow-lg' 
                     : isNextActive
@@ -410,12 +728,6 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
             );
           });
         })()}
- 
-        {/* Big visual sticker at top right to indicate matched word */}
-        <div className="absolute top-3 right-3 bg-[#FFF0F3] rounded-xl p-1.5 border border-[#FFE8A3] flex items-center gap-1 shadow-sm select-none pointer-events-none z-10">
-          <span className="text-2xl">{currentModel.emoji}</span>
-          <span className="text-[#FF85A1] font-black text-xs">{currentModel.name}</span>
-        </div>
  
         {/* The Painting Canvas */}
         <canvas
@@ -484,18 +796,31 @@ export default function TracingSection({ onLogTracing }: TracingSectionProps) {
                 <CheckCircle className="w-6 h-6 text-[#20BFA9]" />
                 <span>Sangat Hebat!</span>
               </h3>
-              <p className="text-gray-500 font-extrabold text-xs mt-1 mb-5 leading-normal relative z-10 leading-relaxed">
+              <p className="text-gray-500 font-extrabold text-xs mt-1 mb-5 leading-normal relative z-10 leading-relaxed font-black">
                 Kamu pandai menulis huruf <span className="text-[#FF85A1] text-lg font-black">{currentModel.letter}</span>!<br />Hebat sekali! ✍️
               </p>
 
-              <button
-                id="btn-tracing-next-letter"
-                onClick={handleNextModel}
-                className="w-full bg-[#20BFA9] text-white font-black text-lg p-3 rounded-xl border-b-4 border-[#189E8B] shadow-lg hover:border-b-2 active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer relative z-10"
-              >
-                <span>Ganti Huruf 🚀</span>
-                <ArrowRight className="w-5 h-5" />
-              </button>
+              <div className="w-full space-y-3.5 relative z-10">
+                <button
+                  id="btn-tracing-retry-letter"
+                  onClick={() => {
+                    playTapSound();
+                    clearCanvas();
+                  }}
+                  className="w-full bg-[#FF85A1] hover:bg-[#e06c87] text-white font-black text-lg p-3.5 rounded-2xl border-b-4 border-[#e06c87] shadow-lg hover:border-b-2 active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Main Lagi ✍️</span>
+                </button>
+
+                <button
+                  id="btn-tracing-next-letter"
+                  onClick={handleNextModel}
+                  className="w-full bg-[#20BFA9] hover:bg-[#189E8B] text-white font-black text-lg p-3.5 rounded-2xl border-b-4 border-[#189E8B] shadow-lg hover:border-b-2 active:scale-95 transition-all text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Ganti Huruf 🚀</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
