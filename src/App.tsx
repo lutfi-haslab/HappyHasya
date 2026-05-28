@@ -7,8 +7,9 @@ import CountingSection from './components/CountingSection';
 import TracingSection from './components/TracingSection';
 import RewardSection from './components/RewardSection';
 import ParentDashboard from './components/ParentDashboard';
+import MiniGamesHub from './components/MiniGamesHub';
 import Mascot from './components/Mascot';
-import { Sparkles, Award, Compass, Settings, User } from 'lucide-react';
+import { Sparkles, Award, Compass, Settings, User, Gamepad2 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'happy_hasya_progress_v1';
 
@@ -20,12 +21,15 @@ const INITIAL_LOGS: ActivityLog = {
   },
   tracedLetters: [],
   playTimeMinutes: 0,
-  stickersEarned: ['cat'], // Start with one free friendly cat sticker!
-  sessionStart: Date.now()
+  stickersEarned: ['cat'],
+  sessionStart: Date.now(),
+  placedStickers: [],
+  playgroundStickers: [],
+  miniGamesPlayed: 0,
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'home' | 'alphabet' | 'counting' | 'tracing' | 'reward' | 'parent'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'alphabet' | 'counting' | 'tracing' | 'reward' | 'parent' | 'games'>('home');
   const [logs, setLogs] = useState<ActivityLog>(INITIAL_LOGS);
   
   // Custom Persona Child Profile State
@@ -52,7 +56,11 @@ export default function App() {
       try {
         const parsed = JSON.parse(rawData);
         setLogs({
+          ...INITIAL_LOGS,
           ...parsed,
+          placedStickers: parsed.placedStickers || [],
+          playgroundStickers: parsed.playgroundStickers || [],
+          miniGamesPlayed: parsed.miniGamesPlayed || 0,
           sessionStart: Date.now()
         });
       } catch (err) {
@@ -229,6 +237,11 @@ export default function App() {
       toAward.push('bubble');
     }
     
+    // 23. Mini Games achievements
+    if ((logs.miniGamesPlayed || 0) >= 1) toAward.push('dino');
+    if ((logs.miniGamesPlayed || 0) >= 3) toAward.push('rocket');
+    if ((logs.miniGamesPlayed || 0) >= 5) toAward.push('star_gold');
+    
     // See if any of these are not yet in stickersEarned
     const newlyAwarded = toAward.filter(id => !logs.stickersEarned.includes(id));
     if (newlyAwarded.length > 0) {
@@ -243,7 +256,7 @@ export default function App() {
         stickersEarned: nextStickers
       });
     }
-  }, [logs.countingAttempts.correct, logs.tracedLetters, logs.letterTaps, logs.playTimeMinutes, profile, activeTab]);
+  }, [logs.countingAttempts.correct, logs.tracedLetters, logs.letterTaps, logs.playTimeMinutes, logs.miniGamesPlayed, profile, activeTab]);
 
   // Log alphabetical interactions
   const handleLogLetter = (letter: string) => {
@@ -302,6 +315,27 @@ export default function App() {
     }
   };
 
+  const handleMiniGameComplete = () => {
+    saveLogs({
+      ...logs,
+      miniGamesPlayed: (logs.miniGamesPlayed || 0) + 1
+    });
+  };
+
+  const handleUpdatePlacedStickers = (placedStickers: ActivityLog['placedStickers']) => {
+    saveLogs({
+      ...logs,
+      placedStickers
+    });
+  };
+
+  const handleUpdatePlaygroundStickers = (playgroundStickers: ActivityLog['playgroundStickers']) => {
+    saveLogs({
+      ...logs,
+      playgroundStickers
+    });
+  };
+
   const renderActiveSection = () => {
     switch (activeTab) {
       case 'alphabet':
@@ -317,7 +351,21 @@ export default function App() {
       case 'tracing':
         return <TracingSection onLogTracing={handleLogTracing} />;
       case 'reward':
-        return <RewardSection unlockedStickersIds={logs.stickersEarned} />;
+        return (
+          <RewardSection
+            unlockedStickersIds={logs.stickersEarned}
+            placedStickers={logs.placedStickers || []}
+            onUpdatePlacedStickers={handleUpdatePlacedStickers}
+          />
+        );
+      case 'games':
+        return (
+          <MiniGamesHub
+            onGameComplete={handleMiniGameComplete}
+            playgroundStickers={logs.playgroundStickers || []}
+            onUpdatePlaygroundStickers={handleUpdatePlaygroundStickers}
+          />
+        );
       case 'parent':
         return (
           <ParentDashboard 
@@ -342,7 +390,7 @@ export default function App() {
 
             {/* Selection Grid for Modules */}
             {/* Selection Grid for Modules */}
-            <div id="homescreen-modules-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-6">
+            <div id="homescreen-modules-grid" className="grid grid-cols-2 lg:grid-cols-5 gap-4 w-full mt-6">
               
               {/* Option 1: Alphabet Letters */}
               <motion.button
@@ -409,6 +457,23 @@ export default function App() {
                   </div>
                   <h3 className="text-lg font-black text-[#4A4A4A] mb-0.5">Stiker</h3>
                   <p className="text-[#c084fc] font-bold text-[10px]">Laci Papan Bermain</p>
+                </div>
+              </motion.button>
+
+              {/* Option 5: Mini Games */}
+              <motion.button
+                id="btn-nav-games"
+                onClick={() => handleNavigate('games', 'Ayo main game seru!')}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white rounded-[2rem] p-2 shadow-lg border-b-[8px] border-amber-400 cursor-pointer text-center relative group w-full transition-all"
+              >
+                <div className="bg-amber-50 rounded-[1.5rem] flex flex-col items-center justify-center py-4 px-2 h-full">
+                  <div className="w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center text-white text-2xl font-black shadow-inner mb-2">
+                    🎮
+                  </div>
+                  <h3 className="text-lg font-black text-[#4A4A4A] mb-0.5">Game</h3>
+                  <p className="text-amber-500 font-bold text-[10px]">Mini Games Seru</p>
                 </div>
               </motion.button>
 
@@ -521,50 +586,84 @@ export default function App() {
         </AnimatePresence>
       </main>
  
-      {/* TIDY COMPACT FOOTER NAVIGATION FOR TODDLERS */}
+      {/* BOTTOM TABS NAVIGATION WITH FAB CENTER */}
       <footer className="bg-[#FEF9F0] border-t-4 border-[#FFE8A3] shadow-lg pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] px-3 sticky bottom-0 z-40 select-none flex-shrink-0">
-        <div id="footer-navigation-tray" className="max-w-md mx-auto flex justify-around items-center gap-2 bg-white/90 p-1.5 rounded-[2rem] border-2 border-[#FFE8A3] shadow-inner">
-          
-          <button
-            id="footer-btn-alphabet"
-            onClick={() => handleNavigate('alphabet', 'Mari belajar memanggil huruf!')}
-            className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'alphabet' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#FF85A1]'}`}
-            style={activeTab === 'alphabet' ? { backgroundColor: '#FF85A1' } : {}}
-          >
-            <span className="text-2xl mt-0.5 leading-none">🔤</span>
-            <span className="text-[10px] font-black mt-1 leading-none uppercase tracking-wide">Huruf</span>
-          </button>
+        <div className="relative max-w-md mx-auto">
+          <div id="footer-navigation-tray" className="flex justify-around items-center gap-1 bg-white/90 p-1.5 rounded-[2rem] border-2 border-[#FFE8A3] shadow-inner">
+            
+            <button
+              id="footer-btn-alphabet"
+              onClick={() => handleNavigate('alphabet', 'Mari belajar memanggil huruf!')}
+              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'alphabet' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#FF85A1]'}`}
+              style={activeTab === 'alphabet' ? { backgroundColor: '#FF85A1' } : {}}
+            >
+              <span className="text-xl mt-0.5 leading-none">🔤</span>
+              <span className="text-[9px] font-black mt-1 leading-none uppercase tracking-wide">Huruf</span>
+            </button>
 
-          <button
-            id="footer-btn-counting"
-            onClick={() => handleNavigate('counting', 'Mari berhitung bersama!')}
-            className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'counting' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#4CC9F0]'}`}
-            style={activeTab === 'counting' ? { backgroundColor: '#4CC9F0' } : {}}
-          >
-            <span className="text-2xl mt-0.5 leading-none">🍎</span>
-            <span className="text-[10px] font-black mt-1 leading-none uppercase tracking-wide">Hitung</span>
-          </button>
+            <button
+              id="footer-btn-counting"
+              onClick={() => handleNavigate('counting', 'Mari berhitung bersama!')}
+              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'counting' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#4CC9F0]'}`}
+              style={activeTab === 'counting' ? { backgroundColor: '#4CC9F0' } : {}}
+            >
+              <span className="text-xl mt-0.5 leading-none">🍎</span>
+              <span className="text-[9px] font-black mt-1 leading-none uppercase tracking-wide">Hitung</span>
+            </button>
 
-          <button
-            id="footer-btn-tracing"
-            onClick={() => handleNavigate('tracing', 'Waktunya melukis garis huruf!')}
-            className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'tracing' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#20BFA9]'}`}
-            style={activeTab === 'tracing' ? { backgroundColor: '#20BFA9' } : {}}
-          >
-            <span className="text-2xl mt-0.5 leading-none">🎨</span>
-            <span className="text-[10px] font-black mt-1 leading-none uppercase tracking-wide">Tulis</span>
-          </button>
+            <div className="flex-shrink-0 w-14 flex items-center justify-center">
+              <div className="w-0.5 h-0"></div>
+            </div>
 
-          <button
-            id="footer-btn-reward"
-            onClick={() => handleNavigate('reward', 'Ayo lihat koleksi stiker indahmu!')}
-            className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'reward' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#c084fc]'}`}
-            style={activeTab === 'reward' ? { backgroundColor: '#c084fc' } : {}}
-          >
-            <span className="text-2xl mt-0.5 leading-none">🏆</span>
-            <span className="text-[10px] font-black mt-1 leading-none uppercase tracking-wide">Stiker</span>
-          </button>
+            <button
+              id="footer-btn-tracing"
+              onClick={() => handleNavigate('tracing', 'Waktunya melukis garis huruf!')}
+              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'tracing' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#20BFA9]'}`}
+              style={activeTab === 'tracing' ? { backgroundColor: '#20BFA9' } : {}}
+            >
+              <span className="text-xl mt-0.5 leading-none">🎨</span>
+              <span className="text-[9px] font-black mt-1 leading-none uppercase tracking-wide">Tulis</span>
+            </button>
 
+            <button
+              id="footer-btn-reward"
+              onClick={() => handleNavigate('reward', 'Ayo lihat koleksi stiker indahmu!')}
+              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-[1.5rem] transition-all cursor-pointer ${activeTab === 'reward' ? 'text-white font-black scale-105 shadow-md' : 'text-gray-500 hover:text-[#c084fc]'}`}
+              style={activeTab === 'reward' ? { backgroundColor: '#c084fc' } : {}}
+            >
+              <span className="text-xl mt-0.5 leading-none">🏆</span>
+              <span className="text-[9px] font-black mt-1 leading-none uppercase tracking-wide">Stiker</span>
+            </button>
+
+          </div>
+
+          {/* FAB CENTER - MINI GAMES */}
+          <button
+            id="footer-btn-games-fab"
+            onClick={() => {
+              if (activeTab === 'games') {
+                window.dispatchEvent(new CustomEvent('reset-games-hub'));
+              } else {
+                handleNavigate('games', 'Ayo main game seru!');
+              }
+            }}
+            className="absolute left-1/2 -translate-x-1/2 -top-5 z-50 cursor-pointer group"
+          >
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              animate={activeTab === 'games' ? { scale: [1, 1.1, 1] } : {}}
+              transition={activeTab === 'games' ? { repeat: Infinity, duration: 1.5 } : {}}
+              className={`w-14 h-14 rounded-full shadow-xl border-4 border-white flex flex-col items-center justify-center transition-all ${
+                activeTab === 'games'
+                  ? 'bg-gradient-to-b from-amber-400 to-amber-500 shadow-amber-300/50 shadow-lg'
+                  : 'bg-gradient-to-b from-amber-400 to-amber-500 group-hover:from-amber-500 group-hover:to-amber-600'
+              }`}
+            >
+              <Gamepad2 className="w-5 h-5 text-white" />
+              <span className="text-[7px] font-black text-white/90 uppercase tracking-wider leading-none mt-0.5">Game</span>
+            </motion.div>
+          </button>
         </div>
       </footer>
 

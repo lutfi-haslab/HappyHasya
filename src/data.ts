@@ -57,6 +57,14 @@ export const STICKERS_DATA: Sticker[] = [
   { id: 'bubble', name: 'Gelembung Sabun', emoji: '🫧', category: 'fantasi', achievement: 'Lakukan pembersihan papan corat-coret!' },
 ];
 
+export const MINI_GAME_STICKER_THEMES: Record<string, { name: string; emoji: string; stickers: string[] }> = {
+  dinosaurus: { name: 'Dinosaurus', emoji: '🦖', stickers: ['🦖', '🦕', '🦴', '🌿', '🥚', '☄️', '🌋', '🦎'] },
+  kendaraan: { name: 'Kendaraan', emoji: '🚗', stickers: ['🚗', '🚀', '✈️', '🚂', '🚁', '🚢', '🚌', '🛸'] },
+  hewan: { name: 'Hewan', emoji: '🐱', stickers: ['🐱', '🐶', '🐰', '🦁', '🐼', '🦄', '🐸', '🦋'] },
+  luar_angkasa: { name: 'Luar Angkasa', emoji: '🌟', stickers: ['🌟', '🌙', '🪐', '🛸', '👨‍🚀', '🔭', '☄️', '🚀'] },
+  makanan: { name: 'Makanan Lucu', emoji: '🍕', stickers: ['🍕', '🍦', '🍩', '🍓', '🧁', '🍔', '🌮', '🍿'] },
+};
+
 export const COUNTING_OBJECTS = [
   { name: 'Apel', emoji: '🍎', phonetic: 'Apel' },
   { name: 'Bebek', emoji: '🦆', phonetic: 'Bebek' },

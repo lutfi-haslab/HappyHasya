@@ -6,6 +6,15 @@ export interface AlphabetItem {
   color: string;
 }
 
+export interface PlacedSticker {
+  id: number;
+  stickerId: string;
+  emoji: string;
+  name: string;
+  x: number;
+  y: number;
+}
+
 export interface ActivityLog {
   letterTaps: Record<string, number>;
   countingAttempts: {
@@ -16,6 +25,9 @@ export interface ActivityLog {
   playTimeMinutes: number;
   stickersEarned: string[];
   sessionStart: number;
+  placedStickers: PlacedSticker[];
+  playgroundStickers: PlacedSticker[];
+  miniGamesPlayed: number;
 }
 
 export interface Sticker {

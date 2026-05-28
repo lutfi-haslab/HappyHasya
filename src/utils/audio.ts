@@ -125,6 +125,73 @@ export function playBubblePopSound() {
   }).catch(console.error);
 }
 
+export function playBalloonPopSound() {
+  ensureAudioContext().then((ctx) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
+
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  }).catch(console.error);
+}
+
+export function playChompSound() {
+  ensureAudioContext().then((ctx) => {
+    const now = ctx.currentTime;
+    [0, 0.12].forEach((offset) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(200, now + offset);
+      osc.frequency.exponentialRampToValueAtTime(80, now + offset + 0.08);
+
+      gain.gain.setValueAtTime(0.15, now + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.1);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + offset);
+      osc.stop(now + offset + 0.12);
+    });
+  }).catch(console.error);
+}
+
+export function playDiscoverSound() {
+  ensureAudioContext().then((ctx) => {
+    const now = ctx.currentTime;
+    const freqs = [523.25, 659.25, 783.99];
+
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+
+      gain.gain.setValueAtTime(0.15, now + idx * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.25);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + idx * 0.06);
+      osc.stop(now + idx * 0.06 + 0.3);
+    });
+  }).catch(console.error);
+}
+
 let cachedVoices: SpeechSynthesisVoice[] = [];
 let speakTimeoutId: ReturnType<typeof setTimeout> | null = null;
 let lastSpokenText = '';

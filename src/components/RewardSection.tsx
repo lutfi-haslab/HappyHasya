@@ -1,25 +1,18 @@
 import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { STICKERS_DATA } from '../data';
+import { PlacedSticker } from '../types';
 import { playTapSound, playStickerSound, speakIndonesian } from '../utils/audio';
 import Mascot from './Mascot';
 import { Sparkles, Image, Compass, Trash2 } from 'lucide-react';
 
 interface RewardSectionProps {
   unlockedStickersIds: string[];
+  placedStickers: PlacedSticker[];
+  onUpdatePlacedStickers: (stickers: PlacedSticker[]) => void;
 }
 
-interface PlacedSticker {
-  id: number;
-  stickerId: string;
-  emoji: string;
-  name: string;
-  x: number;
-  y: number;
-}
-
-export default function RewardSection({ unlockedStickersIds }: RewardSectionProps) {
-  const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
+export default function RewardSection({ unlockedStickersIds, placedStickers, onUpdatePlacedStickers }: RewardSectionProps) {
   const [selectedAlbumSticker, setSelectedAlbumSticker] = useState<typeof STICKERS_DATA[0] | null>(STICKERS_DATA[0]);
   const playgroundRef = useRef<HTMLDivElement | null>(null);
 
@@ -31,17 +24,16 @@ export default function RewardSection({ unlockedStickersIds }: RewardSectionProp
     playStickerSound();
     speakIndonesian(sticker.name);
 
-    // Spawn sticker at random position in the center of playground
     const newPlaced: PlacedSticker = {
       id: Date.now(),
       stickerId: sticker.id,
       emoji: sticker.emoji,
       name: sticker.name,
-      x: 10 + Math.random() * 60, // percentage of playground width (safer constraints)
-      y: 10 + Math.random() * 50 // percentage of playground height
+      x: 10 + Math.random() * 60,
+      y: 10 + Math.random() * 50
     };
 
-    setPlacedStickers(prev => [...prev, newPlaced]);
+    onUpdatePlacedStickers([...placedStickers, newPlaced]);
   };
 
   const handleTapPlacedSticker = (placed: PlacedSticker) => {
@@ -51,7 +43,7 @@ export default function RewardSection({ unlockedStickersIds }: RewardSectionProp
 
   const handleClearPlayground = () => {
     playTapSound();
-    setPlacedStickers([]);
+    onUpdatePlacedStickers([]);
   };
 
   return (
