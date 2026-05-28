@@ -28,6 +28,13 @@ Latihan menulis huruf dengan jari atau mouse di atas panduan garis titik-titik. 
 ### 🏆 Koleksi Stiker (Rewards)
 Kumpulkan 22 stiker dari 4 kategori (hewan, makanan, benda, fantasi) dengan menyelesaikan berbagai aktivitas. Tempelkan stiker di playground yang interaktif!
 
+### 🎮 Pusat Mini-Games (Mini-Games Hub)
+Area bermain interaktif yang dinamis untuk melatih kognitif balita melalui petualangan seru tanpa scrollbar, ramah anak, dan responsif layar penuh:
+- **🎈 Balon Ajaib (Balloon Pop)** — Ketuk dan pecahkan balon yang memuat huruf/angka target. Dilengkapi gerakan melayang super lembut yang toddler-friendly dan efek letusan confetti yang menyenangkan.
+- **👾 Kasih Makan Monster (Feed Monster)** — Bantu beri makan monster naga crimson bermata reptil kuning dan bertanduk dengan buah-buahan yang membawa huruf/angka target. Mulut monster akan mengunyah lahap dengan efek chomp memuaskan!
+- **🔍 Petualangan Cari (Hide & Seek)** — Cari huruf/angka tersembunyi di balik berbagai objek alam (pohon, semak, batu, bunga, jamur, awan) berdasarkan petunjuk dinamis maskot rubah. Temukan siluet samar dan biarkan ia bersinar hijau saat ditemukan!
+- **⭐ Tempel Stiker (Sticker Playground)** — Papan stiker kreatif interaktif tempat anak bebas menempelkan, memperbesar, menggeser, dan menghias stiker hadiah yang telah mereka kumpulkan.
+
 ---
 
 ## Tangkapan Layar
